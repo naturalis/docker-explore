@@ -19,7 +19,7 @@ services:
       - ${TRAEFIK_URL_CONFIG:-traefik.frontend.rule=Host:traefik.docker.localhost}
 
   grafana:
-    image: grafana/grafana:5.3.2
+    image: grafana/grafana:5.4.3
     volumes:
       - grafanadata:/var/lib/grafana
       - ./grafana/dashboards:/var/lib/grafana/dashboards
