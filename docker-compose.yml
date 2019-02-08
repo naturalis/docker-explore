@@ -97,8 +97,8 @@ networks:
     external: true
 
 volumes:
-  grafana_data:
-  pgadmin_data:
+  grafanadata:
+  pgadmindata:
   pglog:
   pgdata:
   pgadmin:
