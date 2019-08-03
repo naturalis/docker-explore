@@ -1,4 +1,11 @@
-version: '3'
+version: '3.4'
+
+x-logging:
+  &default-logging
+  options:
+    max-size: '10m'
+    max-file: '5'
+  driver: json-file
 
 services:
   traefik:
@@ -17,9 +24,11 @@ services:
       - "traefik.enable=true"
       - "traefik.port=8080"
       - ${TRAEFIK_URL_CONFIG:-traefik.frontend.rule=Host:traefik.docker.localhost}
+    logging: *default-logging
 
   grafana:
-    image: grafana/grafana:5.4.3
+    image: grafana/grafana:6.2.5
+    restart: unless-stopped
     volumes:
       - grafanadata:/var/lib/grafana
       - ./grafana/dashboards:/var/lib/grafana/dashboards
@@ -39,10 +48,11 @@ services:
       - "traefik.enable=true"
       - "traefik.port=3000"
       - ${GRAFANA_URL_CONFIG:-traefik.frontend.rule=Host:grafana.docker.localhost}
+    logging: *default-logging
 
   postgres:
-    shm_size: 256M
-    build: ./postgres
+    image: timescale/timescaledb-postgis:latest-pg11
+    restart: unless-stopped
     ports:
       - "5432:5432"
     volumes:
@@ -54,17 +64,15 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - REPLICATION_USER=${REPLICATION_USER}
       - REPLICATION_PASSWORD=${REPLICATION_PASSWORD}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: '10m'
-        max-file: '5'      
     networks:
       - default # postgres datasource grafana
       - pgnet
-
+    shm_size: 256M
+    logging: *default-logging
+ 
   pgadmin:
-    image: dpage/pgadmin4:4
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
@@ -84,16 +92,18 @@ services:
       - "traefik.enable=true"
       - "traefik.port=80"
       - ${GRAFANA_URL_CONFIG:-traefik.frontend.rule=Host:pgadmin.docker.localhost}
+    logging: *default-logging
 
   sqlpad:
     image: 'sqlpad/sqlpad:latest'
-    hostname: 'sqlpad'
+    restart: unless-stopped
     ports:
       - '3030:3000'
     environment:
       - SQLPAD_DEBUG=TRUE
     volumes:
       - sqlpad:/var/lib/sqlpad
+    logging: *default-logging
 
 networks:
   pgnet:
