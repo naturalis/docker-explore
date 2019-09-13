@@ -16,12 +16,15 @@ defaultEntryPoints = ["https","http"]
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
-domain = "naturalis.nl"
+domain = "dryrun.link"
 watch = true
 exposedbydefault = false
 
 [acme]
-email = "<lets encrypt mail>"
+email = "rudi.broekhuizen@naturalis.nl"
 storage = "acme.json"
+caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
 entryPoint = "https"
-OnHostRule = true
+  [acme.dnsChallenge]
+  provider = "route53"
+  delayBeforeCheck = 0
