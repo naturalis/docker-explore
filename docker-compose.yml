@@ -27,7 +27,7 @@ services:
     logging: *default-logging
 
   grafana:
-    image: grafana/grafana:6.2.5
+    image: grafana/grafana:6.3.5
     restart: unless-stopped
     volumes:
       - grafanadata:/var/lib/grafana
@@ -43,11 +43,11 @@ services:
       - web
       - default
     labels:
-      - "traefik.backend=naturalis-grafana"
+      - "traefik.backend=grafana"
       - "traefik.docker.network=web"
       - "traefik.enable=true"
       - "traefik.port=3000"
-      - ${GRAFANA_URL_CONFIG:-traefik.frontend.rule=Host:grafana.docker.localhost}
+      - ${GRAFANA_URL_CONFIG:-traefik.frontend.rule=Host:waarneming.dryrun.link}
     logging: *default-logging
 
   postgres:
